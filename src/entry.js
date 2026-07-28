@@ -30,9 +30,22 @@ class GameScene extends Phaser.Scene {
 
         //collider - создаёт столкновение между игроком и платформой.
         this.physics.add.collider(this.player, this.platforms);
+
+        //создание объекта кнопок
+        this.button = this.input.keyboard.createCursorKeys();
     }
 
-    update() {}
+    update() {
+        if (this.button.left.isDown) {
+            this.player.setFlipX(true);
+        } else if (this.button.right.isDown) {
+            this.player.setFlipX(false);
+        } else if (this.button.up.isDown) {
+            this.player.setTexture("playerShoot");
+        } else {
+            this.player.setTexture("playerRight");
+        }
+    }
 }
 
 const config = {
