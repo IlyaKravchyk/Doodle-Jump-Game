@@ -1,5 +1,6 @@
 const WIDTH = 640;
 const HEIGHT = 800;
+const GRAVITATION = 300;
 
 class GameScene extends Phaser.Scene {
     preload() {
@@ -38,10 +39,13 @@ class GameScene extends Phaser.Scene {
     update() {
         if (this.button.left.isDown) {
             this.player.setFlipX(true);
+            this.player.setVelocity(-160, GRAVITATION);
         } else if (this.button.right.isDown) {
             this.player.setFlipX(false);
-        } else if (this.button.up.isDown) {
+            this.player.setVelocity(160, GRAVITATION);
+        } else if (this.button.up.isDown || this.button.space.isDown) {
             this.player.setTexture("playerShoot");
+            this.player.setVelocity(0, -300);
         } else {
             this.player.setTexture("playerRight");
         }
@@ -55,7 +59,7 @@ const config = {
     physics: {
         default: "arcade",
         arcade: {
-            gravity: {y: 800},
+            gravity: {y: GRAVITATION},
             debug: false,
         },
     },
