@@ -1,6 +1,7 @@
 const WIDTH = 640;
 const HEIGHT = 800;
-const GRAVITATION = 300;
+const GRAVITATION = 500;
+const VELOCITY_Y = GRAVITATION - 100;
 
 class GameScene extends Phaser.Scene {
     preload() {
@@ -30,7 +31,7 @@ class GameScene extends Phaser.Scene {
         this.player.setSize(40, 60);
 
         //collider - создаёт столкновение между игроком и платформой.
-        this.physics.add.collider(this.player, this.platforms);
+        this.physics.add.collider(this.player, this.platforms, this.infinityJumpHandler);
 
         //создание объекта кнопок
         this.button = this.input.keyboard.createCursorKeys();
@@ -47,12 +48,17 @@ class GameScene extends Phaser.Scene {
         } else if (this.button.right.isDown) {
             this.player.setFlipX(false);
             this.player.setVelocityX(160);
-        } else if (this.button.up.isDown || this.button.space.isDown) {
+        } else if (this.button.up.isDown) {
             this.player.setTexture("playerShoot");
-            this.player.setVelocityY(-300);
         } else {
             this.player.setTexture("playerRight");
             this.player.setVelocityX(0);
+        }
+    }
+
+    infinityJumpHandler(player, platform) {
+        if (player.y < platform.y) {
+            player.setVelocityY(-VELOCITY_Y);
         }
     }
 }
