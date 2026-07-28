@@ -16,14 +16,19 @@ class GameScene extends Phaser.Scene {
     }
 
     create() {
+        //Добавил фон
         this.add.image(0, 0, "bgGame").setOrigin(0, 0);
 
+        //Создал платформу
         this.platforms = this.physics.add.staticGroup();
         this.platforms.create(WIDTH / 2, HEIGHT / 2, "staticTile");
 
+        //Создал игрока
         this.player = this.physics.add.sprite(WIDTH / 2, HEIGHT / 2 - 80, "playerRight");
+        //Установка габаритов игровой модели
         this.player.setSize(40, 60);
 
+        //collider - создаёт столкновение между игроком и платформой.
         this.physics.add.collider(this.player, this.platforms);
     }
 
