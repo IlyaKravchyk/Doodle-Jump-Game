@@ -1,7 +1,7 @@
 const WIDTH = 640;
 const HEIGHT = 800;
 const GRAVITATION = 500;
-const VELOCITY_Y = GRAVITATION - 100;
+const VELOCITY_Y = GRAVITATION - 130;
 
 class GameScene extends Phaser.Scene {
     preload() {
@@ -18,6 +18,8 @@ class GameScene extends Phaser.Scene {
     }
 
     create() {
+        this.isShooting = false;
+
         //Добавил фон
         this.add.image(0, 0, "bgGame").setOrigin(0, 0);
 
@@ -29,6 +31,7 @@ class GameScene extends Phaser.Scene {
         this.player = this.physics.add.sprite(WIDTH / 2, HEIGHT / 2 - 80, "playerRight");
         //Установка габаритов игровой модели
         this.player.setSize(40, 60);
+        this.player.setCollideWorldBounds(true);
 
         //collider - создаёт столкновение между игроком и платформой.
         this.physics.add.collider(this.player, this.platforms, this.infinityJumpHandler);
@@ -48,11 +51,13 @@ class GameScene extends Phaser.Scene {
         } else if (this.button.right.isDown) {
             this.player.setFlipX(false);
             this.player.setVelocityX(160);
-        } else if (this.button.up.isDown) {
-            this.player.setTexture("playerShoot");
+        } else if (Phaser.Input.Keyboard.JustDown(this.button.up) && !this.isShooting) {
+            this.shootingHandler();
         } else {
-            this.player.setTexture("playerRight");
             this.player.setVelocityX(0);
+        }
+        if (!this.isShooting) {
+            this.player.setTexture("playerRight");
         }
     }
 
@@ -60,6 +65,14 @@ class GameScene extends Phaser.Scene {
         if (player.y < platform.y) {
             player.setVelocityY(-VELOCITY_Y);
         }
+    }
+
+    shootingHandler() {
+        this.isShooting = true;
+        this.player.setTexture("playerShoot");
+        this.time.delayedCall(200, () => {
+            this.isShooting = false;
+        });
     }
 }
 
