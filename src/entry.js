@@ -37,17 +37,22 @@ class GameScene extends Phaser.Scene {
     }
 
     update() {
+        this.handlePlayerInput();
+    }
+
+    handlePlayerInput() {
         if (this.button.left.isDown) {
             this.player.setFlipX(true);
-            this.player.setVelocity(-160, GRAVITATION);
+            this.player.setVelocityX(-160);
         } else if (this.button.right.isDown) {
             this.player.setFlipX(false);
-            this.player.setVelocity(160, GRAVITATION);
+            this.player.setVelocityX(160);
         } else if (this.button.up.isDown || this.button.space.isDown) {
             this.player.setTexture("playerShoot");
-            this.player.setVelocity(0, -300);
+            this.player.setVelocityY(-300);
         } else {
             this.player.setTexture("playerRight");
+            this.player.setVelocityX(0);
         }
     }
 }
