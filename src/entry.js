@@ -30,7 +30,8 @@ class GameScene extends Phaser.Scene {
         //Создал игрока
         this.player = this.physics.add.sprite(WIDTH / 2, HEIGHT / 2 - 80, "playerRight");
         //Установка габаритов игровой модели
-        this.player.setSize(40, 60);
+        this.player.setSize(40, 50);
+        this.player.setOffset(0, 10);
         this.player.setCollideWorldBounds(true);
 
         //collider - создаёт столкновение между игроком и платформой.
