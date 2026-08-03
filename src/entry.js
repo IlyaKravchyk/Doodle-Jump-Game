@@ -35,7 +35,7 @@ class GameScene extends Phaser.Scene {
         this.player.setCollideWorldBounds(true);
 
         //collider - создаёт столкновение между игроком и платформой.
-        this.physics.add.collider(this.player, this.platforms, this.infinityJumpHandler);
+        this.physics.add.collider(this.player, this.platforms, this.infinityJumpHandler, this.checkJumpDirection, this);
 
         //создание объекта кнопок
         this.button = this.input.keyboard.createCursorKeys();
@@ -65,6 +65,10 @@ class GameScene extends Phaser.Scene {
         }
     }
 
+    checkJumpDirection(player, platforms) {
+        return player.body.velocity.y > 0;
+    }
+
     infinityJumpHandler(player, platform) {
         if (player.y < platform.y) {
             player.setVelocityY(-VELOCITY_Y);
@@ -84,6 +88,7 @@ class GameScene extends Phaser.Scene {
         firstPlatform.body.checkCollision.right = false;
         firstPlatform.body.checkCollision.down = false;
         firstPlatform.body.checkCollision.left = false;
+        firstPlatform.refreshBody();
     }
 
     randomGeneratePlatforms() {
