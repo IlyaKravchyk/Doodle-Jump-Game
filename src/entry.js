@@ -19,13 +19,13 @@ class GameScene extends Phaser.Scene {
 
     create() {
         this.isShooting = false;
+        this.dynamicHeightPlatform = HEIGHT - 100;
 
         //Добавил фон
         this.add.image(0, 0, "bgGame").setOrigin(0, 0);
 
-        //Создал платформу
+        //Создал группу платформ
         this.platforms = this.physics.add.staticGroup();
-        this.platforms.create(WIDTH / 2, HEIGHT / 2, "staticTile");
 
         //Создал игрока
         this.player = this.physics.add.sprite(WIDTH / 2, HEIGHT / 2 - 80, "playerRight");
@@ -38,6 +38,9 @@ class GameScene extends Phaser.Scene {
 
         //создание объекта кнопок
         this.button = this.input.keyboard.createCursorKeys();
+
+        this.createFirstPlatform();
+        this.randomGeneratePlatforms();
     }
 
     update() {
@@ -73,6 +76,25 @@ class GameScene extends Phaser.Scene {
         this.time.delayedCall(200, () => {
             this.isShooting = false;
         });
+    }
+
+    createFirstPlatform() {
+        const firstPlatform = this.platforms.create(WIDTH / 2, HEIGHT / 2, "staticTile");
+        firstPlatform.body.checkCollision.right = false;
+        firstPlatform.body.checkCollision.down = false;
+        firstPlatform.body.checkCollision.left = false;
+    }
+
+    randomGeneratePlatforms() {
+        for (let i = 10; i >= 0; i--) {
+            const x = Phaser.Math.Between(50, WIDTH - 50);
+            this.dynamicHeightPlatform -= Phaser.Math.Between(50, 130);
+            const platform = this.platforms.create(x, this.dynamicHeightPlatform, "staticTile");
+            platform.body.checkCollision.right = false;
+            platform.body.checkCollision.down = false;
+            platform.body.checkCollision.left = false;
+            platform.refreshBody();
+        }
     }
 }
 
