@@ -30,8 +30,8 @@ class GameScene extends Phaser.Scene {
         //Создал игрока
         this.player = this.physics.add.sprite(WIDTH / 2, HEIGHT / 2 - 80, "playerRight");
         //Установка габаритов игровой модели
-        this.player.setSize(40, 50);
-        this.player.setOffset(0, 10);
+        this.player.setSize(35, 50);
+        this.player.setOffset(13.5, 10);
         this.player.setCollideWorldBounds(true);
 
         //collider - создаёт столкновение между игроком и платформой.
@@ -65,8 +65,12 @@ class GameScene extends Phaser.Scene {
         }
     }
 
-    checkJumpDirection(player, platforms) {
-        return player.body.velocity.y > 0;
+    checkJumpDirection(player, platform) {
+        return (
+            player.body.velocity.y > 0 &&
+            player.body.right > platform.body.left &&
+            player.body.left < platform.body.right
+        );
     }
 
     infinityJumpHandler(player, platform) {
