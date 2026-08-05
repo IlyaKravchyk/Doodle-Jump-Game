@@ -49,7 +49,18 @@ class GameScene extends Phaser.Scene {
 
     update() {
         this.handlePlayerInput();
+        this.teleportPlayer();
         this.updateCamera();
+    }
+
+    teleportPlayer() {
+        const halfWidthPlayer = this.player.width / 2;
+
+        if (this.player.x - halfWidthPlayer > WIDTH) {
+            this.player.setPosition(-halfWidthPlayer, this.player.y);
+        } else if (this.player.x + halfWidthPlayer < 0) {
+            this.player.setPosition(WIDTH + halfWidthPlayer, this.player.y);
+        }
     }
 
     updateCamera() {
