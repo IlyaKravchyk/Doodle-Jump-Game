@@ -21,18 +21,21 @@ class GameScene extends Phaser.Scene {
         this.isShooting = false;
         this.dynamicHeightPlatform = HEIGHT - 100;
 
-        //Добавил фон
-        this.add.image(0, 0, "bgGame").setOrigin(0, 0);
+        //Добавил фон setScrollFactor(0) привязывает фон к камере
+        this.add.image(0, 0, "bgGame").setOrigin(0, 0).setScrollFactor(0);
 
         //Создал группу платформ
         this.platforms = this.physics.add.staticGroup();
 
         //Создал игрока
         this.player = this.physics.add.sprite(WIDTH / 2, HEIGHT / 2 - 80, "playerRight");
-        //Установка габаритов игровой модели
+
+        //Установил hits игрока
         this.player.setSize(35, 50);
         this.player.setOffset(13.5, 10);
-        this.player.setCollideWorldBounds(true);
+
+        //Создал порог выше которого камера будет подниматься 800 * 0,35 = 280
+        this.cameraTrashold = HEIGHT * 0.35;
 
         //collider - создаёт столкновение между игроком и платформой.
         this.physics.add.collider(this.player, this.platforms, this.infinityJumpHandler, this.checkJumpDirection, this);
@@ -46,6 +49,20 @@ class GameScene extends Phaser.Scene {
 
     update() {
         this.handlePlayerInput();
+        this.updateCamera();
+    }
+
+    updateCamera() {
+        const camera = this.cameras.main;
+        //Координаты игрока - координаты игрового окна
+        const playerScreenY = this.player.y - camera.scrollY;
+
+        // Игрок поднялся выше 35% экрана - cameraTrashold
+        if (playerScreenY < this.cameraTrashold) {
+            const targetScrollY = this.player.y - this.cameraTrashold;
+
+            camera.scrollY = Phaser.Math.Linear(camera.scrollY, targetScrollY, 0.1);
+        }
     }
 
     handlePlayerInput() {
