@@ -127,7 +127,7 @@ class GameScene extends Phaser.Scene {
     randomGeneratePlatforms(count) {
         for (let i = 0; i < count; i++) {
             const x = Phaser.Math.Between(50, WIDTH - 50);
-            this.dynamicHeightPlatform -= Phaser.Math.Between(60, 135);
+            this.dynamicHeightPlatform -= Phaser.Math.Between(60, 100);
             const platform = this.platforms.create(x, this.dynamicHeightPlatform, "staticTile");
             platform.body.checkCollision.right = false;
             platform.body.checkCollision.down = false;
@@ -143,7 +143,7 @@ class GameScene extends Phaser.Scene {
             // Проверяем, ушла ли платформа ниже видимой границы экрана + 50 пикселей запаса
             if (platform.y > camera.scrollY + HEIGHT + 50) {
                 // Вычисляем новую координату Y еще выше текущей верхней точки
-                this.dynamicHeightPlatform -= Phaser.Math.Between(60, 135);
+                this.dynamicHeightPlatform -= Phaser.Math.Between(60, 100);
                 const newX = Phaser.Math.Between(50, WIDTH - 50);
 
                 // Телепортируем существующий спрайт наверх
