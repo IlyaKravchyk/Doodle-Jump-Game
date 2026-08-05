@@ -28,7 +28,7 @@ class GameScene extends Phaser.Scene {
         this.platforms = this.physics.add.staticGroup();
 
         //Создал игрока
-        this.player = this.physics.add.sprite(WIDTH / 2, HEIGHT / 2 - 80, "playerRight");
+        this.player = this.physics.add.sprite(WIDTH / 2, HEIGHT - 100 - 80, "playerRight");
 
         //Установил hits игрока
         this.player.setSize(35, 50);
@@ -44,13 +44,14 @@ class GameScene extends Phaser.Scene {
         this.button = this.input.keyboard.createCursorKeys();
 
         this.createFirstPlatform();
-        this.randomGeneratePlatforms();
+        this.randomGeneratePlatforms(15);
     }
 
     update() {
         this.handlePlayerInput();
         this.teleportPlayer();
         this.updateCamera();
+        this.transferPlatforms();
     }
 
     teleportPlayer() {
@@ -79,10 +80,10 @@ class GameScene extends Phaser.Scene {
     handlePlayerInput() {
         if (this.button.left.isDown) {
             this.player.setFlipX(true);
-            this.player.setVelocityX(-160);
+            this.player.setVelocityX(-180);
         } else if (this.button.right.isDown) {
             this.player.setFlipX(false);
-            this.player.setVelocityX(160);
+            this.player.setVelocityX(180);
         } else if (Phaser.Input.Keyboard.JustDown(this.button.up) && !this.isShooting) {
             this.shootingHandler();
         } else {
@@ -116,23 +117,42 @@ class GameScene extends Phaser.Scene {
     }
 
     createFirstPlatform() {
-        const firstPlatform = this.platforms.create(WIDTH / 2, HEIGHT / 2, "staticTile");
+        const firstPlatform = this.platforms.create(WIDTH / 2, HEIGHT - 100, "staticTile");
         firstPlatform.body.checkCollision.right = false;
         firstPlatform.body.checkCollision.down = false;
         firstPlatform.body.checkCollision.left = false;
         firstPlatform.refreshBody();
     }
 
-    randomGeneratePlatforms() {
-        for (let i = 10; i >= 0; i--) {
+    randomGeneratePlatforms(count) {
+        for (let i = 0; i < count; i++) {
             const x = Phaser.Math.Between(50, WIDTH - 50);
-            this.dynamicHeightPlatform -= Phaser.Math.Between(50, 130);
+            this.dynamicHeightPlatform -= Phaser.Math.Between(60, 135);
             const platform = this.platforms.create(x, this.dynamicHeightPlatform, "staticTile");
             platform.body.checkCollision.right = false;
             platform.body.checkCollision.down = false;
             platform.body.checkCollision.left = false;
             platform.refreshBody();
         }
+    }
+
+    transferPlatforms() {
+        const camera = this.cameras.main;
+
+        this.platforms.getChildren().forEach((platform) => {
+            // Проверяем, ушла ли платформа ниже видимой границы экрана + 50 пикселей запаса
+            if (platform.y > camera.scrollY + HEIGHT + 50) {
+                // Вычисляем новую координату Y еще выше текущей верхней точки
+                this.dynamicHeightPlatform -= Phaser.Math.Between(60, 135);
+                const newX = Phaser.Math.Between(50, WIDTH - 50);
+
+                // Телепортируем существующий спрайт наверх
+                platform.setPosition(newX, this.dynamicHeightPlatform);
+
+                // ВАЖНО: Пересчитываем физическое тело под новые координаты спрайта
+                platform.refreshBody();
+            }
+        });
     }
 }
 
