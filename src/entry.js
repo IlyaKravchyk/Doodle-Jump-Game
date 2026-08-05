@@ -98,7 +98,8 @@ class GameScene extends Phaser.Scene {
         return (
             player.body.velocity.y > 0 &&
             player.body.right > platform.body.left &&
-            player.body.left < platform.body.right
+            player.body.left < platform.body.right &&
+            player.body.bottom <= platform.body.top + 10
         );
     }
 
