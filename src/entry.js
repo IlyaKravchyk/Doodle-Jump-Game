@@ -5,7 +5,7 @@ const VELOCITY_Y = GRAVITATION - 130;
 
 class GameScene extends Phaser.Scene {
     preload() {
-        const assets = "public/assets/images";
+        const assets = "assets/images";
         this.load.image("bgGame", `${assets}/background/background_play.png`);
         this.load.image("staticTile", `${assets}/tiles/tile_static.png`);
         //player
