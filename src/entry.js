@@ -2,6 +2,17 @@ const WIDTH = 640;
 const HEIGHT = 800;
 const GRAVITATION = 500;
 const VELOCITY_Y = GRAVITATION - 130;
+const VELOCITY_X = 180;
+
+const hardK = 0.85;
+
+const timeFlyToTop = VELOCITY_Y / GRAVITATION;
+const fullTimeFly = timeFlyToTop * 2;
+
+const MAX_JUMP_Y = (VELOCITY_Y ** 2 / (2 * GRAVITATION)) * hardK;
+const MAX_JUMP_X = fullTimeFly * VELOCITY_X;
+
+const MAX_GAP_X = 0;
 
 class GameScene extends Phaser.Scene {
     preload() {
@@ -19,7 +30,8 @@ class GameScene extends Phaser.Scene {
 
     create() {
         this.isShooting = false;
-        this.dynamicHeightPlatform = HEIGHT - 100;
+        this.lastPlatformY = HEIGHT - 100;
+        this.lastPlatformX = WIDTH / 2;
 
         //Добавил фон setScrollFactor(0) привязывает фон к камере
         this.add.image(0, 0, "bgGame").setOrigin(0, 0).setScrollFactor(0);
@@ -43,7 +55,6 @@ class GameScene extends Phaser.Scene {
         //создание объекта кнопок
         this.button = this.input.keyboard.createCursorKeys();
 
-        this.createFirstPlatform();
         this.randomGeneratePlatforms(15);
     }
 
@@ -80,10 +91,10 @@ class GameScene extends Phaser.Scene {
     handlePlayerInput() {
         if (this.button.left.isDown) {
             this.player.setFlipX(true);
-            this.player.setVelocityX(-180);
+            this.player.setVelocityX(-VELOCITY_X);
         } else if (this.button.right.isDown) {
             this.player.setFlipX(false);
-            this.player.setVelocityX(180);
+            this.player.setVelocityX(VELOCITY_X);
         } else if (Phaser.Input.Keyboard.JustDown(this.button.up) && !this.isShooting) {
             this.shootingHandler();
         } else {
@@ -117,8 +128,8 @@ class GameScene extends Phaser.Scene {
         });
     }
 
-    createFirstPlatform() {
-        const firstPlatform = this.platforms.create(WIDTH / 2, HEIGHT - 100, "staticTile");
+    createPlatform(x, y) {
+        const firstPlatform = this.platforms.create(x, y, "staticTile");
         firstPlatform.body.checkCollision.right = false;
         firstPlatform.body.checkCollision.down = false;
         firstPlatform.body.checkCollision.left = false;
@@ -126,15 +137,30 @@ class GameScene extends Phaser.Scene {
     }
 
     randomGeneratePlatforms(count) {
+        this.createPlatform(this.lastPlatformX, this.lastPlatformY);
+
         for (let i = 0; i < count; i++) {
-            const x = Phaser.Math.Between(50, WIDTH - 50);
-            this.dynamicHeightPlatform -= Phaser.Math.Between(60, 100);
-            const platform = this.platforms.create(x, this.dynamicHeightPlatform, "staticTile");
-            platform.body.checkCollision.right = false;
-            platform.body.checkCollision.down = false;
-            platform.body.checkCollision.left = false;
-            platform.refreshBody();
+            this.generateNextPlatformCoords();
+            this.createPlatform(this.lastPlatformX, this.lastPlatformY);
         }
+    }
+
+    generateNextPlatformCoords() {
+        const y = this.lastPlatformY - Phaser.Math.Between(60, MAX_JUMP_Y);
+        const offsetX = Phaser.Math.Between(-MAX_JUMP_X, MAX_JUMP_X);
+
+        let x = this.lastPlatformX + offsetX;
+
+        const padding = 50;
+
+        if (x < padding) {
+            x = padding + (padding - x); // отодвинули платформу от левой границы
+        } else if (x > WIDTH - padding) {
+            x = WIDTH - padding - (x - (WIDTH - padding)); // отодвинули платформу от правой границы
+        }
+
+        this.lastPlatformX = x;
+        this.lastPlatformY = y;
     }
 
     transferPlatforms() {
@@ -143,14 +169,9 @@ class GameScene extends Phaser.Scene {
         this.platforms.getChildren().forEach((platform) => {
             // Проверяем, ушла ли платформа ниже видимой границы экрана + 50 пикселей запаса
             if (platform.y > camera.scrollY + HEIGHT + 50) {
-                // Вычисляем новую координату Y еще выше текущей верхней точки
-                this.dynamicHeightPlatform -= Phaser.Math.Between(60, 100);
-                const newX = Phaser.Math.Between(50, WIDTH - 50);
-
-                // Телепортируем существующий спрайт наверх
-                platform.setPosition(newX, this.dynamicHeightPlatform);
-
-                // ВАЖНО: Пересчитываем физическое тело под новые координаты спрайта
+                this.generateNextPlatformCoords();
+                // Телепортируем существующую платформу наверх
+                platform.setPosition(this.lastPlatformX, this.lastPlatformY);
                 platform.refreshBody();
             }
         });
