@@ -4,6 +4,13 @@ const GRAVITATION = 500;
 const VELOCITY_Y = GRAVITATION - 130;
 const VELOCITY_X = 180;
 
+const MAX_JUMP_Y = VELOCITY_Y ** 2 / (2 * GRAVITATION);
+const timeFlyToTop = VELOCITY_Y / GRAVITATION;
+const fullTimeFly = timeFlyToTop * 2;
+const MAX_JUMP_X = fullTimeFly * VELOCITY_X;
+
+const MAX_GAP_X = 0;
+
 class GameScene extends Phaser.Scene {
     preload() {
         const assets = "public/assets/images";
