@@ -2,6 +2,7 @@ const WIDTH = 640;
 const HEIGHT = 800;
 const GRAVITATION = 500;
 const VELOCITY_Y = GRAVITATION - 130;
+const VELOCITY_X = 180;
 
 class GameScene extends Phaser.Scene {
     preload() {
@@ -80,10 +81,10 @@ class GameScene extends Phaser.Scene {
     handlePlayerInput() {
         if (this.button.left.isDown) {
             this.player.setFlipX(true);
-            this.player.setVelocityX(-180);
+            this.player.setVelocityX(-VELOCITY_X);
         } else if (this.button.right.isDown) {
             this.player.setFlipX(false);
-            this.player.setVelocityX(180);
+            this.player.setVelocityX(VELOCITY_X);
         } else if (Phaser.Input.Keyboard.JustDown(this.button.up) && !this.isShooting) {
             this.shootingHandler();
         } else {
