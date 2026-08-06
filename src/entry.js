@@ -107,6 +107,9 @@ class GameScene extends Phaser.Scene {
 
             camera.scrollY = Phaser.Math.Linear(camera.scrollY, targetScrollY, 0.1);
         }
+        if (playerScreenY > HEIGHT) {
+            this.scene.restart();
+        }
     }
 
     handlePlayerInput() {
