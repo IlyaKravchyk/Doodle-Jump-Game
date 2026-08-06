@@ -12,8 +12,6 @@ const fullTimeFly = timeFlyToTop * 2;
 const MAX_JUMP_Y = (VELOCITY_Y ** 2 / (2 * GRAVITATION)) * hardK;
 const MAX_JUMP_X = fullTimeFly * VELOCITY_X;
 
-const MAX_GAP_X = 0;
-
 class GameScene extends Phaser.Scene {
     preload() {
         const assets = "assets/images";
@@ -55,6 +53,18 @@ class GameScene extends Phaser.Scene {
         //создание объекта кнопок
         this.button = this.input.keyboard.createCursorKeys();
 
+        // создание счётчика
+        this.startY = this.player.y;
+        this.maxHeight = 0;
+
+        this.heightText = this.add
+            .text(20, 20, "Points: 0", {
+                fontSize: "20px",
+                color: "#000",
+                fontStyle: "bold",
+            })
+            .setScrollFactor(0);
+
         this.randomGeneratePlatforms(15);
     }
 
@@ -63,6 +73,17 @@ class GameScene extends Phaser.Scene {
         this.teleportPlayer();
         this.updateCamera();
         this.transferPlatforms();
+        this.updateHeight();
+    }
+
+    updateHeight() {
+        const currentHeight = this.startY - this.player.y;
+
+        if (currentHeight > this.maxHeight) {
+            this.maxHeight = currentHeight;
+
+            this.heightText.setText(`Points: ${Math.floor(this.maxHeight)}`);
+        }
     }
 
     teleportPlayer() {
